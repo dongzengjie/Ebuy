@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.demo.dzj.ebuy.dao.ShopDao">
+
+	<resultMap type="com.example.demo.dzj.ebuy.entity.Shop" id="shopmap">
+		<id column="shop_id" property="shopId"/>
+		<result column="shop_name" property="shopName"/>
+		<result column="user_id" property="user.userId"/>
+		<result column="bigtype_id" property="bigtype.bigtypeId"/>
+		
+		<association property="bigtype" column="bigtype_id" javaType="com.example.demo.dzj.ebuy.entity.Bigtype">
+			<id column="bigtype_id" property="bigtypeId"/>
+			<result column="big_name" property="bigName"/>
+		</association>
+		<association property="user" column="user_id" javaType="com.example.demo.dzj.ebuy.entity.User">
+			<id column="user_id" property="userId"/>
+			<result column="username" property="username"/>
+		</association>
+	</resultMap>
+
+	<select id="queryShopInfoByUserId" parameterType="java.lang.Long"
+		resultMap="shopmap">
+		SELECT
+		s.shop_id,
+		s.user_id,
+		s.bigtype_id,
+		s.shop_name,
+		b.big_name,
+		b.bigtype_id,
+		u.user_id,
+		u.username
+		
+		
+		FROM
+		t_shop s ,t_bigtype b,t_user u
+		WHERE
+		s.bigtype_id = b.bigtype_id
+		and 
+		s.user_id=u.user_id
+		and 
+		s.user_id=#{userId}
+	</select>
+
+	<select id="queryShopInfoByShopId" parameterType="java.lang.Long"
+		resultType="com.example.demo.dzj.ebuy.entity.Shop">
+		SELECT
+		shop_id,
+		shop_name,
+		user_id,
+		bigtype_id
+		FROM
+		t_shop
+		WHERE
+		shop_id=#{shopId}
+	</select>
+
+	<insert id="insertShopInfo" parameterType="com.example.demo.dzj.ebuy.entity.Shop"
+		useGeneratedKeys="true" keyColumn="shop_id" keyProperty="shopId">
+		INSERT INTO
+		t_shop (
+		shop_name,
+		user_id,
+		bigtype_id
+		)
+		VALUES
+		(
+		#{shopName},
+		#{user.userId},
+		#{bigtype.bigtypeId}
+		)
+	</insert>
+	
+</mapper>

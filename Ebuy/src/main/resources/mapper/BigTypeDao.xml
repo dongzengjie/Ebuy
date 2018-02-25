@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.demo.dzj.ebuy.dao.BigTypeDao">
+
+	<resultMap type="com.example.demo.dzj.ebuy.entity.Bigtype"
+		id="category">
+		<id column="bigtype_id" property="bigtypeId" />
+		<result column="big_name" property="bigName" />
+		<result column="remarks" property="remarks" />
+		<collection property="smalltypelist" column="bigtype_id"
+			ofType="com.example.demo.dzj.ebuy.entity.Smalltype">
+			<id column="smalltype_id" property="smalltypeId" />
+			<result column="small_name" property="smallName" />
+			<result column="remarks" property="remarks" />
+			<result column="bigtype_id" property="bigtypeId" />
+			<result column="shop_id" property="shopId"/>
+		</collection>
+	</resultMap>
+
+	<select id="queryBigtypeAndSmallType" resultMap="category">
+		SELECT
+		b.bigtype_id,
+		b.big_name,
+		b.remarks,
+		s.smalltype_id,
+		s.small_name,
+		s.remarks,
+		s.shop_id
+		FROM
+		t_bigtype b LEFT JOIN
+		t_smalltype s
+		ON
+		b.bigtype_id=s.bigtype_id
+
+
+	</select>
+
+	<select id="queryBigtype" resultType="com.example.demo.dzj.ebuy.entity.Bigtype">
+		SELECT
+		bigtype_id,
+		big_name,
+		remarks
+		FROM
+		t_bigtype
+	</select>
+
+	<insert id="insertBigType" parameterType="com.example.demo.dzj.ebuy.entity.Bigtype">
+		INSERT INTO t_bigtype
+		(big_name,
+		remarks)
+		VALUES
+		(
+			#{bigName},
+			#{remarks}
+		)
+
+	</insert>
+</mapper>

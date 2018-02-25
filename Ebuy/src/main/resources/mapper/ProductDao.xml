@@ -1,0 +1,255 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.demo.dzj.ebuy.dao.ProductDao">
+
+
+	<resultMap type="com.example.demo.dzj.ebuy.entity.Product"
+		id="productMap">
+		<id column="product_id" property="productId" />
+		<result column="description" property="description" />
+		<result column="hot" property="hot" />
+		<result column="hot_time" property="hotTime" />
+		<result column="product_name" property="productName" />
+		<result column="price" property="price" />
+		<result column="proPic" property="proPic" />
+		<result column="special_price" property="specialPrice" />
+		<result column="special_price_time" property="specialPriceTime" />
+		<result column="stock" property="stock" />
+		<result column="enable_status" property="enableStatus" />
+		<association property="bigtype" column="bigtype_id"
+			javaType="com.example.demo.dzj.ebuy.entity.Bigtype">
+			<id column="bigtype_id" property="bigtypeId" />
+			<result column="big_name" property="bigName" />
+		</association>
+
+		<association property="smalltype" column="smalltype_id"
+			javaType="com.example.demo.dzj.ebuy.entity.Smalltype">
+
+			<id column="smalltype_id" property="smalltypeId" />
+			<result column="small_name" property="smallName" />
+		</association>
+
+		<association property="shop" column="shop_id"
+			javaType="com.example.demo.dzj.ebuy.entity.Shop">
+
+			<id column="shop_id" property="shopId" />
+			<result column="shop_name" property="shopName" />
+		</association>
+
+	</resultMap>
+
+	<insert id="insertProduct" parameterType="com.example.demo.dzj.ebuy.entity.Product"
+		useGeneratedKeys="true" keyColumn="product_id" keyProperty="productId">
+
+		INSERT INTO
+		t_product
+		(
+		description,
+		hot,
+		hot_time,
+		product_name,
+		price,
+		proPic,
+		special_price,
+		special_price_time,
+		stock,
+		bigtype_id,
+		smalltype_id,
+		shop_id,
+		enable_status
+		)
+		VALUES
+		(
+		#{description},
+		#{hot},
+		#{hotTime},
+		#{productName},
+		#{price},
+		#{proPic},
+		#{specialPrice},
+		#{specialPriceTime},
+		#{stock},
+		#{bigtype.bigtypeId},
+		#{smalltype.smalltypeId},
+		#{shop.shopId},
+		#{enableStatus}
+		)
+	</insert>
+
+	<select id="queryProductById" parameterType="java.lang.Long"
+		resultMap="productMap">
+		SELECT
+		pro.product_id,
+		pro.description,
+		pro.hot,
+		pro.hot_time,
+		pro.product_name,
+		pro.price,
+		pro.proPic,
+		pro.special_price,
+		pro.special_price_time,
+		pro.stock,
+		pro.enable_status,
+		big.bigtype_id,
+		big.big_name,
+		small.smalltype_id,
+		small.small_name,
+		shop.shop_id,
+		shop.shop_name
+
+		FROM
+		t_product pro , t_bigtype big, t_smalltype
+		small,t_shop shop
+		WHERE
+		pro.bigtype_id=big.bigtype_id
+		and
+		pro.shop_id=shop.shop_id
+		and
+		pro.smalltype_id=small.smalltype_id
+		and
+
+		product_id=#{productId}
+	</select>
+
+	<select id="queryProductList" resultType="com.example.demo.dzj.ebuy.entity.Product">
+		SELECT
+		product_id,
+		description,
+		hot,
+		hot_time,
+		product_name,
+		price,
+		proPic,
+		special_price,
+		special_price_time,
+		stock,
+		bigtype_id,
+		smalltype_id,
+		shop_id,
+		enable_status
+		FROM
+		t_product
+		<where>
+			<if test="product.shop!=null and product.shop.shopId !=null">
+				and shop_id=#{product.shop.shopId}
+			</if>
+
+			<if test="product.bigtype !=null and product.bigtype.bigtypeId !=null">
+				and bigtype_id= #{product.bigtype.bigtypeId}
+
+			</if>
+			<if
+				test="product.smalltype !=null and product.smalltype.smalltypeId !=null">
+				and smalltype_id=#{product.smalltype.smalltypeId}
+			</if>
+			<if test="product.productName !=null">
+				and product_name like '%${product.productName}%'
+			</if>
+			<if test="product.specialPriceTime !=null">
+				and special_price_time like
+				'%${product.specialPriceTime}%'
+			</if>
+
+			<if test="product.hotTime !=null">
+				and hot_time like
+				'%${product.hotTime}%'
+			</if>
+			<if test="product.enableStatus !=null">
+				and enable_status =#{product.enableStatus}
+			</if>
+
+		</where>
+		order by hot DESC
+		LIMIT #{rowIndex},${pageSize}
+
+	</select>
+
+
+	<update id="updateProduct" parameterType="com.example.demo.dzj.ebuy.entity.Product">
+		UPDATE t_product
+		<set>
+			<if test="description !=null">
+				description=#{description},
+			</if>
+			<if test="hot != null">
+				hot =#{hot},
+			</if>
+			<if test="hotTime !=null">
+				hot_time =#{hotTime},
+			</if>
+			<if test="productName !=null">
+				product_name = #{productName},
+			</if>
+			<if test="price !=null">
+				price =#{price},
+			</if>
+			<if test="proPic !=null">
+				proPic=#{proPic},
+			</if>
+			<if test="specialPrice !=null">
+				special_price = #{specialPrice} ,
+			</if>
+			<if test="specialPriceTime !=null">
+				special_price_time =#{specialPriceTime},
+			</if>
+
+			<if test="stock !=null">
+				stock =#{stock},
+			</if>
+			<if test="enableStatus !=null">
+				enable_status=#{enableStatus},
+			</if>
+			<if test="smalltype !=null and smalltype.smalltypeId !=null">
+				smalltype_id =#{smalltype.smalltypeId}
+			</if>
+		</set>
+		WHERE
+		product_id=#{productId} and shop_id=#{shop.shopId}
+	</update>
+
+
+	<select id="queryProductCount" resultType="java.lang.Integer">
+		SELECT count(1) from t_product
+		<where>
+			<if test="product.shop!=null and product.shop.shopId !=null">
+				and shop_id=#{product.shop.shopId}
+			</if>
+
+			<if test="product.bigtype !=null and product.bigtype.bigtypeId !=null">
+				and bigtype_id= #{product.bigtype.bigtypeId}
+
+			</if>
+			<if
+				test="product.smalltype !=null and product.smalltype.smalltypeId !=null">
+				and smalltype_id=#{product.smalltype.smalltypeId}
+			</if>
+			<if test="product.productName !=null">
+				and product_name like '%${product.productName}%'
+			</if>
+
+			<if test="product.enableStatus !=null">
+				and enable_status =#{product.enableStatus}
+			</if>
+		</where>
+	</select>
+
+
+
+	<update id="updateProductSmallTypeIdToNull" parameterType="java.lang.Long">
+
+		UPDATE t_product
+		set
+		smalltype_id =null
+		where
+		smalltype_id=#{smalltypeId} and shop_id=#{shopId}
+
+	</update>
+
+
+
+
+
+
+</mapper>

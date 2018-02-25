@@ -1,0 +1,173 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.demo.dzj.ebuy.dao.UserDao">
+
+
+
+	<resultMap type="com.example.demo.dzj.ebuy.entity.User" id="userMap">
+		<id column="user_id" property="userId" />
+		<result column="address" property="address" />
+		<result column="birthday" property="birthday" />
+		<result column="dentity_code" property="dentityCode" />
+		<result column="email" property="email" />
+		<result column="mobile" property="mobile" />
+		<result column="password" property="password" />
+		<result column="sex" property="sex" />
+		<result column="ustatus" property="status" />
+		<result column="true_name" property="trueName" />
+		<result column="username" property="username" />
+
+		<collection property="orderlist" column="user_id"
+			ofType="com.example.demo.dzj.ebuy.entity.Order">
+			<id column="order_id" property="orderId" />
+			<result column="cost" property="cost" />
+			<result column="create_time" property="createTime" />
+			<result column="order_no" property="orderNo" />
+			<result column="ostatus" property="status" />
+			<result column="user_id" property="userId" />
+			<result column="shop_id" property="shopId" />
+
+		</collection>
+
+
+
+	</resultMap>
+
+	<insert id="addUser" parameterType="com.example.demo.dzj.ebuy.entity.User"
+		useGeneratedKeys="true" keyColumn="user_id" keyProperty="userId">
+		INSERT INTO
+		t_user
+		(
+		address,
+		birthday,
+		dentity_code,
+		email,
+		mobile,
+		password,
+		sex,
+		status,
+		true_name,
+		username
+		)
+		VALUES
+		(
+		#{address},
+		#{birthday},
+		#{dentityCode},
+		#{email},
+		#{mobile},
+		#{password},
+		#{sex},
+		#{status},
+		#{trueName},
+		#{username}
+		)
+
+	</insert>
+
+
+	<select id="queryUserByUserId" parameterType="java.lang.Long"
+		resultMap="userMap">
+
+		SELECT
+		u.user_id,
+		u.address,
+		u.birthday,
+		u.dentity_code,
+		u.email,
+		u.mobile,
+		u.password,
+		u.sex,
+		u.status AS ustatus,
+		u.true_name,
+		u.username,
+		o.order_id,
+		o.cost,
+		o.create_time,
+		o.order_no,
+		o.status AS
+		ostatus,
+		o.user_id,
+		o.shop_id
+		FROM
+		t_user u LEFT JOIN
+		t_order o
+		ON
+		u.user_id=o.user_id
+		WHERE
+		u.user_id=#{userId}
+	</select>
+
+
+	<select id="queryUserByUserName" parameterType="java.lang.String"
+		resultMap="userMap">
+		SELECT
+		u.user_id,
+		u.address,
+		u.birthday,
+		u.dentity_code,
+		u.email,
+		u.mobile,
+		u.password,
+		u.sex,
+		u.status AS ustatus,
+		u.true_name,
+		u.username,
+		o.order_id,
+		o.cost,
+		o.create_time,
+		o.order_no,
+		o.status AS
+		ostatus,
+		o.user_id,
+		o.shop_id
+		FROM
+		t_user u LEFT JOIN
+		t_order o
+		ON
+		u.user_id=o.user_id
+		WHERE
+		u.username=#{username}
+
+
+	</select>
+
+
+	<select id="queryUserByUserNameAndPassword" parameterType="java.lang.String"
+		resultMap="userMap">
+		SELECT
+		u.user_id,
+		u.address,
+		u.birthday,
+		u.dentity_code,
+		u.email,
+		u.mobile,
+		u.password,
+		u.sex,
+		u.status AS ustatus,
+		u.true_name,
+		u.username,
+		o.order_id,
+		o.cost,
+		o.create_time,
+		o.order_no,
+		o.status AS
+		ostatus,
+		o.user_id,
+		o.shop_id
+		FROM
+		t_user u LEFT JOIN
+		t_order o
+		ON
+		u.user_id=o.user_id
+		WHERE
+		u.username=#{username}
+		AND
+
+		u.password=#{password}
+
+
+	</select>
+</mapper>
